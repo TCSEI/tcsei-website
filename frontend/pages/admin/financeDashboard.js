@@ -1,24 +1,32 @@
-import Footer from '../../components/Footer';
-import Navbar from '../../components/Navbar';
+import React from 'react';
 
-export default function FinanceDashboard() {
+export default function FinanceDashboard({ user }) {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <Navbar />
-      <h1 className="text-3xl font-bold text-center py-8 font-poppins">Finance Dashboard</h1>
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg elevation-2">
-          <h2 className="text-xl font-bold font-poppins">Payment Records</h2>
-          <p className="mt-2">Total Payments: $10,000</p>
-          <p>Pending Payments: $1,500</p>
-        </div>
-        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg elevation-2">
-          <h2 className="text-xl font-bold font-poppins">Reports</h2>
-          <p className="mt-2">Monthly Revenue: $2,000</p>
-          <p>Division Breakdown: TCS ($1,200), Gurukulam ($800)</p>
-        </div>
-      </div>
-      <Footer />
+    <div>
+      {user ? (
+        <h1>Welcome, {user.name || 'Admin'}</h1>
+      ) : (
+        <h1>Please log in</h1>
+      )}
+      <p>Finance Dashboard</p>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/user`, {
+      headers: {
+        cookie: context.req.headers.cookie || '',
+      },
+    });
+    const data = await response.json();
+    if (!data || !data.user) {
+      return { props: { user: null } };
+    }
+    return { props: { user: data.user } };
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return { props: { user: null } };
+  }
 }

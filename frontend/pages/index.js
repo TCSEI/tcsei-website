@@ -1,33 +1,32 @@
-import HeroSection from '../components/HeroSection';
-import DivisionCard from '../components/DivisionCard';
-import Testimonials from '../components/Testimonials';
-import Footer from '../components/Footer';
-import Navbar from '../components/Navbar';
+import React from 'react';
 
-export default function Home() {
+export default function Home({ user }) {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <Navbar />
-      <HeroSection />
-      <section className="py-12 max-w-7xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center font-poppins animate-slide-up">Our Divisions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          <DivisionCard
-            title="TCS Coaching"
-            description="Prepare for SSC, GD, Bank, Railway, TET, and more."
-            link="/tcs-coaching"
-            image="/images/tcs-coaching.jpg"
-          />
-          <DivisionCard
-            title="Sarvoday Gurukulam"
-            description="Holistic education from playschool to Class 8."
-            link="/sarvoday-gurukulam"
-            image="/images/sarvoday-gurukulam.jpg"
-          />
-        </div>
-      </section>
-      <Testimonials />
-      <Footer />
+    <div>
+      {user ? (
+        <h1>Welcome, {user.name || 'User'}</h1>
+      ) : (
+        <h1>Welcome to TCSEI</h1>
+      )}
+      <p>Home Page</p>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/user`, {
+      headers: {
+        cookie: context.req.headers.cookie || '',
+      },
+    });
+    const data = await response.json();
+    if (!data || !data.user) {
+      return { props: { user: null } };
+    }
+    return { props: { user: data.user } };
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return { props: { user: null } };
+  }
 }
