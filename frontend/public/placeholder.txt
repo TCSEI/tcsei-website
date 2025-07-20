@@ -1,0 +1,1 @@
+Placeholder file for Vercel public directory
