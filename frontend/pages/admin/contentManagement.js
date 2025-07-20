@@ -1,32 +1,14 @@
-import React from 'react';
+import { useAuth } from '../../hooks/useAuth';
 
-     export default function ContentManagement({ user }) {
-       return (
-         <div>
-           {user ? (
-             <h1>Welcome, {user.name || 'Admin'}</h1>
-           ) : (
-             <h1>Please log in</h1>
-           )}
-           <p>Content Management Dashboard</p>
-         </div>
-       );
-     }
+export default function ContentManagement() {
+  const { user, loading } = useAuth();
 
-     export async function getServerSideProps(context) {
-       try {
-         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/user`, {
-           headers: {
-             cookie: context.req.headers.cookie || '',
-           },
-         });
-         const data = await response.json();
-         if (!data || !data.user) {
-           return { props: { user: null } };
-         }
-         return { props: { user: data.user } };
-       } catch (error) {
-         console.error('Error fetching user:', error);
-         return { props: { user: null } };
-       }
-     }
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <h1>Content Management</h1>
+      {user ? <p>Welcome, {user.name}</p> : <p>Please log in</p>}
+    </div>
+  );
+}

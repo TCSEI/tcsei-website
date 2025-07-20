@@ -1,5 +1,5 @@
-module.exports = {
-  images: {
-    domains: ['via.placeholder.com'],
-  },
+const nextConfig = {
+  reactStrictMode: true,
 };
+
+module.exports = nextConfig;
